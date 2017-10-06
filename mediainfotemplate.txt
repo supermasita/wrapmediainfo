@@ -1,0 +1,5 @@
+General;<?xml version="1.0" encoding="UTF-8"?><file><track type="General"><filename>%CompleteName%</filename><filesize>%FileSize%</filesize><duration>%Duration%</duration></track>
+#Video; |Video: %Width%x%Height% * %DisplayAspectRatio/String% * %Format% %Format_Profile%
+#Audio; |Audio: %Language/String% * %Channel(s)% CH * %Codec/String%
+#Text; |Sub: %Language/String% * %Codec%
+File_End;</file>
