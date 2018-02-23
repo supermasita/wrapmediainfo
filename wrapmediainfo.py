@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+# https://github.com/supermasita/wrapmediainfo 
+
+# Adjust to your system config
 mediainfoBin = "/usr/bin/mediainfo"
 
 
@@ -7,10 +10,18 @@ from subprocess import Popen, PIPE
 import xml.etree.ElementTree
 
 
-def mediaMetadataExtract(filename):
-    """ 
+def help():
     """
-    command = [mediainfoBin, "--Output=file://mediainfotemplate.txt", filename]
+    Prints information about how to use the command. Returns string.
+    """
+    print("Usage: wrapmediainfo.py -f {filename}")
+    exit(1)
+
+def mediaMetadataExtract(filename):
+    """
+    Parses media metadata. Returns dictionary. 
+    """
+    command = [mediainfoBin, "--Output=file://mediainfo.tpl", filename]
     p = Popen(command, stdout=PIPE)
     p.wait()
 
@@ -20,14 +31,15 @@ def mediaMetadataExtract(filename):
 
     root = xml.etree.ElementTree.fromstring(data)
 
-    #print(root.tag, root.attrib)
+    mediainfoDict = {}
+
+    for child_of_root in root:
+        #print(child_of_root.tag, child_of_root.attrib)
+        for grandchild_of_root in child_of_root:
+            mediainfoDict[grandchild_of_root.tag] = grandchild_of_root.text
+
     
-    for child in root:
-        #print(child.tag, child.attrib)
-        duration = int(child.find('duration').text)
-
-
-    return duration
+    return mediainfoDict
 
 
 # Use from command line
@@ -38,27 +50,15 @@ if __name__ == '__main__':
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "f:")
+
+    if not opts :
+        help()
     
     for opt, arg in opts :
         if opt == "-f" :
             filename = arg
     
-    duration = mediaMetadataExtract(filename)
+    mediainfoDict = mediaMetadataExtract(filename)
 
-    print(duration)
-
-    #print(filename)
-    #print("videoCodecType ", mediaMetadata.videoCodecType)
-    #print("videoBitrate ", mediaMetadata.videoBitrate)
-    #print("videoWidth ", mediaMetadata.videoWidth)
-    #print("videoHeight ", mediaMetadata.videoHeight) 
-    #print("videoCodecName ", mediaMetadata.videoCodecName)
-    #print("duration ", mediaMetadata.duration)
-    #print("size ", mediaMetadata.size)
-    #print("totalBitrate ", mediaMetadata.totalBitrate)
-    #print("fileFormat ", mediaMetadata.fileFormat)
-    #print("audioCodecType ", mediaMetadata.audioCodecType)
-    #print("audioBitrate ", mediaMetadata.audioBitrate)
-    #print("audioCodecName ", mediaMetadata.audioCodecName)
-
+    print(mediainfoDict)
 
