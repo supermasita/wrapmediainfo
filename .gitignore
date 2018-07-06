@@ -1,4 +1,6 @@
 *.swp
+video1
+video2
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
