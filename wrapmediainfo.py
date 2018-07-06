@@ -1,11 +1,10 @@
 #!/usr/bin/python3
-
 # https://github.com/supermasita/wrapmediainfo 
 
 # Adjust to your system config
 mediainfoBin = "/usr/bin/mediainfo"
 
-
+# 
 from subprocess import Popen, PIPE
 import xml.etree.ElementTree
 
@@ -21,7 +20,7 @@ def mediaMetadataExtract(filename):
     """
     Parses media metadata. Returns dictionary. 
     """
-    command = [mediainfoBin, "--Output=file://mediainfo.tpl", filename]
+    command = [mediainfoBin, "--Output=file://.mediainfo.tpl", filename]
     p = Popen(command, stdout=PIPE)
     p.wait()
 
@@ -34,7 +33,6 @@ def mediaMetadataExtract(filename):
     mediainfoDict = {}
 
     for child_of_root in root:
-        #print(child_of_root.tag, child_of_root.attrib)
         for grandchild_of_root in child_of_root:
             mediainfoDict[grandchild_of_root.tag] = grandchild_of_root.text
 
