@@ -5,10 +5,11 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-# command to install dependencies
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y mediainfo
 install:
   #- pip install -r requirements.txt
-  - apt-get install mediainfo
   - curl http://mirror.cessen.com/blender.org/peach/trailer/trailer_iphone.m4v -o video1
   - curl http://download.blender.org/peach/trailer/trailer_400p.ogg -o video2
 # command to run tests
