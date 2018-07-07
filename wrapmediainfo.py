@@ -5,7 +5,8 @@
 mediainfoBin = "/usr/bin/mediainfo"
 
 # 
-from subprocess import Popen, PIPE
+#from subprocess import Popen, PIPE
+import subprocess
 import xml.etree.ElementTree
 
 
@@ -20,21 +21,24 @@ def mediaMetadataExtract(filename):
     """
     Parses media metadata. Returns dictionary. 
     """
-    command = [mediainfoBin, "--Output=file://.mediainfo.tpl", filename]
-    p = Popen(command, stdout=PIPE)
-    p.wait()
-
-    data = p.stdout.read()
-    p.stdout.close()
-    data = data.decode("utf-8")
-
-    root = xml.etree.ElementTree.fromstring(data)
-
     mediainfoDict = {}
+    try:
+        command = "%s --Output=file://.mediainfo.tpl %s" % (mediainfoBin, filename)
 
-    for child_of_root in root:
-        for grandchild_of_root in child_of_root:
-            mediainfoDict[grandchild_of_root.tag] = grandchild_of_root.text
+        output = subprocess.check_output(
+            command, stderr=subprocess.STDOUT, shell=True, timeout=3,
+            universal_newlines=True)
+
+    except subprocess.CalledProcessError as e:
+       mediainfoDict["status"] = e.returncode
+       mediainfoDict["filesize"] = 0
+       mediainfoDict["filename"] = filename
+    else:
+       mediainfoDict["status"] = 0
+       root = xml.etree.ElementTree.fromstring(output)
+       for child_of_root in root:
+           for grandchild_of_root in child_of_root:
+               mediainfoDict[grandchild_of_root.tag] = grandchild_of_root.text
 
     
     return mediainfoDict
