@@ -1,13 +1,9 @@
 #!/usr/bin/python3
-# https://github.com/supermasita/wrapmediainfo 
+# https://github.com/supermasita/wrapmediainfo
 
-# Adjust to your system config
-mediainfoBin = "/usr/bin/mediainfo"
-
-# 
-#from subprocess import Popen, PIPE
-import subprocess
 import xml.etree.ElementTree
+import subprocess
+mediainfo_binary = "/usr/bin/mediainfo"
 
 
 def help():
@@ -17,50 +13,49 @@ def help():
     print("Usage: wrapmediainfo.py -f {filename}")
     exit(1)
 
-def mediaMetadataExtract(filename):
+
+def media_metadata_extract(filename):
     """
     Parses media metadata. Returns dictionary. 
     """
-    mediainfoDict = {}
+    mediainfo_dict = {}
     try:
-        command = "%s --Output=file://.mediainfo.tpl %s" % (mediainfoBin, filename)
+        command = "%s --Output=file://.mediainfo.tpl %s" % (
+            mediainfo_binary, filename)
 
         output = subprocess.check_output(
             command, stderr=subprocess.STDOUT, shell=True, timeout=3,
             universal_newlines=True)
-
     except subprocess.CalledProcessError as e:
-       mediainfoDict["status"] = e.returncode
-       mediainfoDict["filesize"] = 0
-       mediainfoDict["filename"] = filename
+        mediainfo_dict["status"] = e.returncode
+        mediainfo_dict["filesize"] = 0
+        mediainfo_dict["filename"] = filename
     else:
-       mediainfoDict["status"] = 0
-       root = xml.etree.ElementTree.fromstring(output)
-       for child_of_root in root:
-           for grandchild_of_root in child_of_root:
-               mediainfoDict[grandchild_of_root.tag] = grandchild_of_root.text
+        mediainfo_dict["status"] = 0
+        root = xml.etree.ElementTree.fromstring(output)
+        for child_of_root in root:
+            for grandchild_of_root in child_of_root:
+                mediainfo_dict[grandchild_of_root.tag] = grandchild_of_root.text
 
-    
-    return mediainfoDict
+    return mediainfo_dict
 
 
 # Use from command line
 if __name__ == '__main__':
 
     import sys
-    import getopt    
+    import getopt
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "f:")
 
-    if not opts :
+    if not opts:
         help()
-    
-    for opt, arg in opts :
-        if opt == "-f" :
+
+    for opt, arg in opts:
+        if opt == "-f":
             filename = arg
-    
-    mediainfoDict = mediaMetadataExtract(filename)
 
-    print(mediainfoDict)
+    mediainfo_dict = media_metadata_extract(filename)
 
+    print(mediainfo_dict)
